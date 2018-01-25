@@ -9,8 +9,6 @@ import copy
 from subprocess import call
 from os import execv
 from sys import argv
-
-
 import discord
 from discord.ext import commands
 
