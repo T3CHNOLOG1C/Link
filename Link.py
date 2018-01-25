@@ -1,5 +1,4 @@
 #!/usr/bin/env python3.6
-
 import os
 import configparser
 import asyncio
@@ -87,11 +86,10 @@ for addon in addons:
 
 bot.all_ready = True
 
-print("Client logged in as {}.".format(bot.user.name))
+print("Client logged in.")
     
     
 # Core commands
-
 @bot.command(hidden=True)
 async def unload(ctx, addon: str):
     """Unloads an addon."""
