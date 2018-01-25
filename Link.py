@@ -89,7 +89,7 @@ for addon in addons:
 
 bot.all_ready = True
 
-print("Client logged in as {}, in the following guild : {}".format(bot.user.name, guild.name))
+print("Client logged in as {}.".format(bot.user.name))
     
     
 # Core commands
