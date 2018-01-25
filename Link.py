@@ -71,11 +71,10 @@ async def on_error(ctx, event_method, *args, **kwargs):
 
 @bot.event
 async def on_ready():
-
     for guild in bot.guilds:
         bot.guild = guild
 
-bot.errlogs_channel = config['Channels']['ErrorLogs'])
+bot.errlogs_channel = config['Channels']['ErrorLogs']
         
     # Load addons
     addons = [
