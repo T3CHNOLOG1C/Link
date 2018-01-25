@@ -144,7 +144,7 @@ async def restart(ctx):
     user = ctx.message.author
     if user.id == 208370244207509504:
         await ctx.send("`Restarting, please wait...`")
-        execv("./Link.py", argv)
+        execv("python3 Link.py", argv)
 
 # Run the bot
 bot.run(config['Main']['token'])	
