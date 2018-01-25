@@ -76,23 +76,23 @@ async def on_ready():
 
 bot.errlogs_channel = config['Channels']['ErrorLogs']
         
-    # Load addons
-    addons = [
-        'addons.misc',
-     ]
+# Load addons
+addons = [
+    'addons.misc',
+]
 
-    for addon in addons:
-        try:
-            bot.load_extension(addon)
-        except Exception as e:
-            print("Failed to load {} :\n{} : {}".format(addon, type(e).__name__, e))
+for addon in addons:
+    try:
+        bot.load_extension(addon)
+    except Exception as e:
+        print("Failed to load {} :\n{} : {}".format(addon, type(e).__name__, e))
 
-    bot.all_ready = True
+bot.all_ready = True
 
-    print("Client logged in as {}, in the following guild : {}".format(bot.user.name, guild.name))
+print("Client logged in as {}, in the following guild : {}".format(bot.user.name, guild.name))
     
     
-    # Core commands
+# Core commands
 
 @bot.command(hidden=True)
 async def unload(ctx, addon: str):
