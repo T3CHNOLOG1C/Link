@@ -15,67 +15,43 @@ from discord.ext import commands
 path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(path)
 
-bot_prefix = ["l!", "@Link"]
+bot_prefix = ["l.", "<@406073912406048769> "]
 bot = commands.Bot(command_prefix=bot_prefix, description="Link, a general purpose bot.", max_messages=10000, pm_help=None)
 
 # Read config.ini
 config = configparser.ConfigParser()
 config.read("config.ini")
 
+
+bot.errorlogs_channel = discord.utils.get(guild.text_channels, name="{}".format(config['Channels']['ErrorLogs']))
+
 # Handle errors
 # Taken from 
 # https://github.com/916253/Kurisu/blob/31b1b747e0d839181162114a6e5731a3c58ee34f/run.py#L88
 @bot.event
-async def on_command_error(ctx, error):
+async def on_command_error(error, ctx):
     if isinstance(error, commands.errors.CommandNotFound):
-        pass
+        pass  # ...don't need to know if commands don't exist
     if isinstance(error, commands.errors.CheckFailure):
-        await ctx.send("{} You don't have permission to use this command.".format(ctx.message.author.mention))
+        await bot.send_message(ctx.message.channel, "{} You don't have permission to use this command.".format(ctx.message.author.mention))
     elif isinstance(error, commands.errors.MissingRequiredArgument):
         formatter = commands.formatter.HelpFormatter()
-        msg = await formatter.format_help_for(ctx, ctx.command)
-        await ctx.send("{} You are missing required arguments.\n{}".format(ctx.message.author.mention, msg[0]))
-    elif isinstance(error, commands.errors.CommandOnCooldown):
-        try:
-            await ctx.message.delete()
-        except discord.errors.NotFound:
-            pass
-        message = await ctx.message.channel.send("{} This command was used {:.2f}s ago and is on cooldown. Try again in {:.2f}s.".format(ctx.message.author.mention, error.cooldown.per - error.retry_after, error.retry_after))
-        await asyncio.sleep(10)
-        await message.delete()
+        await bot.send_message(ctx.message.channel, "{} You are missing required arguments.\n{}".format(ctx.message.author.mention, formatter.format_help_for(ctx, ctx.command)[0]))
     else:
-        await ctx.send("An error occured while processing the `{}` command.".format(ctx.command.name))
-        print('Ignoring exception in command {0.command} in {0.message.channel}'.format(ctx))
-        errlogs_msg = "Exception occured in `{0.command}` in {0.message.channel.mention}".format(ctx)
+        bot.errorlogs_channel.send("An error occurred while processing the `{}` command.".format(ctx.command.name))
         tb = traceback.format_exception(type(error), error, error.__traceback__)
         print(''.join(tb))
-        await bot.errlogs_channel.send(errlogs_msg + '\n```' + ''.join(tb) + '\n```')
-
-@bot.event
-async def on_error(ctx, event_method, *args, **kwargs):
-    if isinstance(args[0], commands.errors.CommandNotFound):
-        return
-    print('Ignoring exception in {}'.format(event_method))
-    errlogs_msg = "Exception occured in {}".format(event_method)
-    tb = traceback.format_exc()
-    print(''.join(tb))
-    errlogs_msg += '\n```' + ''.join(tb) + '\n```'
-    errlogs_msg += '\nargs: `{}`\n\nkwargs: `{}`'.format(args, kwargs)
-    await bot.errlogs_channel.send(errlogs_msg)
-    print(args)
-    print(kwargs)
-
-
+        
 @bot.event
 async def on_ready():
     for guild in bot.guilds:
         bot.guild = guild
 
-bot.errlogs_channel = config['Channels']['ErrorLogs']
         
 # Load addons
 addons = [
     'addons.misc',
+    'addons.currency',
 ]
 
 for addon in addons:
@@ -131,7 +107,7 @@ async def pull(ctx, pip=None):
                 "requirements.txt"])
             pip_text = " and updated python dependencies"
         await ctx.send("Pulled changes{}! Restarting...".format(pip_text))
-        execv("./Link.py", argv)
+        execv("python3.6 Link.py", argv)
     else:
         if "pacman" in ctx.message.content:
             await ctx.send("`{} is not in the sudoers file. This incident will be reported.`".format(ctx.message.author.display_name))
@@ -144,7 +120,7 @@ async def restart(ctx):
     user = ctx.message.author
     if user.id == 208370244207509504:
         await ctx.send("`Restarting, please wait...`")
-        execv("python3 Link.py", argv)
+        execv("python3.6 Link.py", argv)
 
 # Run the bot
 bot.run(config['Main']['token'])	
